@@ -1,9 +1,7 @@
-from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from database.mongodb import db
 from utils.helpers import create_start_keyboard
 
-@Client.on_message(filters.command("start"))
 async def start_command(client, message):
     user_id = message.from_user.id
     args = message.text.split()
