@@ -1,9 +1,7 @@
-from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from database.mongodb import db
-from utils.helpers import get_user_level
+from config import config  # missing import added
 
-@Client.on_message(filters.command("help"))
 async def help_command(client, message):
     help_text = """
 **📚 Commands List**
@@ -46,7 +44,6 @@ Send .pdf, .docx for document analysis
 """
     await message.reply(help_text)
 
-@Client.on_message(filters.command("profile"))
 async def profile_command(client, message):
     user_id = message.from_user.id
     user = await db.get_user(user_id)
