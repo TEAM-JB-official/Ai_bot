@@ -10,6 +10,7 @@ class Config:
     API_HASH = os.getenv("API_HASH", "cab85305bf85125a2ac053210bcd1030")
     BOT_TOKEN = os.getenv("BOT_TOKEN", "7977209272:AAEX0GrXV0hjWPJx6E_HLq-uOjAlqd7mul4")
     MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://rs92573993688:pVf4EeDuRi2o92ex@cluster0.9u29q.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    MONGO_URI = MONGO_URL  # <-- add this line
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "telegram_ai_bot")
     
     # AI
