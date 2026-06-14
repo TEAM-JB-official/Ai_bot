@@ -1,12 +1,11 @@
 import os
 import tempfile
 import aiofiles
-from pyrogram import Client, filters
 from pyrogram.types import Message
 import PyPDF2
 from docx import Document
+from ai_service.ai_provider import ai_provider  # moved import to top
 
-@Client.on_message(filters.document & filters.private)
 async def handle_document(client, message: Message):
     doc = message.document
     file_name = doc.file_name
@@ -40,8 +39,6 @@ async def handle_document(client, message: Message):
                 text = text[:5000]  # Limit to 5000 chars
         
         if text:
-            # Use AI to summarize
-            from ai_service.ai_provider import ai_provider
             summary = await ai_provider.generate_response(
                 "gpt-3.5-turbo",
                 [{"role": "user", "content": f"Summarize this document:\n\n{text}"}]
