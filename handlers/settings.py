@@ -1,9 +1,7 @@
-from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from database.mongodb import db
 from config import config
 
-@Client.on_message(filters.command("settings"))
 async def settings_command(client, message):
     user_id = message.from_user.id
     user = await db.get_user(user_id)
@@ -17,7 +15,6 @@ async def settings_command(client, message):
     
     await message.reply("⚙️ **Bot Settings**\nConfigure your preferences:", reply_markup=keyboard)
 
-@Client.on_callback_query()
 async def settings_callbacks(client, callback_query: CallbackQuery):
     data = callback_query.data
     user_id = callback_query.from_user.id
