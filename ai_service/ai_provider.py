@@ -8,18 +8,28 @@ class AIProvider:
         self.deepseek_client = None
         self.gemini_model = None
         
-        if "openai" in config.AI_API_KEYS:
-            self.openai_client = openai.AsyncOpenAI(api_key=config.AI_API_KEYS["openai"])
+        # Only initialize if API key exists
+        if config.AI_API_KEYS.get("openai"):
+            try:
+                self.openai_client = openai.AsyncOpenAI(api_key=config.AI_API_KEYS["openai"])
+            except Exception as e:
+                print(f"OpenAI init error: {e}")
         
-        if "deepseek" in config.AI_API_KEYS:
-            self.deepseek_client = openai.AsyncOpenAI(
-                api_key=config.AI_API_KEYS["deepseek"],
-                base_url="https://api.deepseek.com/v1"
-            )
+        if config.AI_API_KEYS.get("deepseek"):
+            try:
+                self.deepseek_client = openai.AsyncOpenAI(
+                    api_key=config.AI_API_KEYS["deepseek"],
+                    base_url="https://api.deepseek.com/v1"
+                )
+            except Exception as e:
+                print(f"DeepSeek init error: {e}")
         
-        if "gemini" in config.AI_API_KEYS:
-            genai.configure(api_key=config.AI_API_KEYS["gemini"])
-            self.gemini_model = genai.GenerativeModel('gemini-pro')
+        if config.AI_API_KEYS.get("gemini"):
+            try:
+                genai.configure(api_key=config.AI_API_KEYS["gemini"])
+                self.gemini_model = genai.GenerativeModel('gemini-pro')
+            except Exception as e:
+                print(f"Gemini init error: {e}")
     
     async def generate_response(self, model, messages, system_prompt=None):
         if system_prompt:
@@ -28,43 +38,41 @@ class AIProvider:
         provider = config.SUPPORTED_MODELS.get(model)
         
         if provider == "openai":
+            if not self.openai_client:
+                return "❌ OpenAI API key not configured. Please add your key."
             response = await self.openai_client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=0.7
+                model=model, messages=messages, temperature=0.7
             )
             return response.choices[0].message.content
         
         elif provider == "deepseek":
+            if not self.deepseek_client:
+                return "❌ DeepSeek API key not configured."
             response = await self.deepseek_client.chat.completions.create(
-                model=model,
-                messages=messages,
-                temperature=0.7
+                model=model, messages=messages, temperature=0.7
             )
             return response.choices[0].message.content
         
         elif provider == "gemini":
-            # Convert messages format
+            if not self.gemini_model:
+                return "❌ Gemini API key not configured."
             prompt = ""
             for msg in messages:
                 role = "User" if msg["role"] == "user" else "Assistant"
                 prompt += f"{role}: {msg['content']}\n"
-            
             response = await self.gemini_model.generate_content_async(prompt)
             return response.text
         
         else:
-            raise ValueError(f"Unsupported model: {model}")
+            return f"❌ Unsupported model: {model}"
     
     async def analyze_code(self, code, language, task):
-        """Analyze code for bugs, review, optimization"""
         prompts = {
             "debug": f"Find and fix bugs in this {language} code:\n\n{code}",
-            "review": f"Review this {language} code for best practices, security, and performance:\n\n{code}",
-            "optimize": f"Optimize this {language} code for better performance:\n\n{code}",
-            "explain": f"Explain this {language} code line by line:\n\n{code}"
+            "review": f"Review this {language} code:\n\n{code}",
+            "optimize": f"Optimize this {language} code:\n\n{code}",
+            "explain": f"Explain this {language} code:\n\n{code}"
         }
-        
         messages = [{"role": "user", "content": prompts.get(task, prompts["review"])}]
         return await self.generate_response("gpt-3.5-turbo", messages)
     
@@ -73,7 +81,7 @@ class AIProvider:
         return await self.generate_response("gpt-3.5-turbo", messages)
     
     async def generate_readme(self, project_info):
-        messages = [{"role": "user", "content": f"Generate a professional README.md for this project:\n{project_info}"}]
+        messages = [{"role": "user", "content": f"Generate a professional README.md for:\n{project_info}"}]
         return await self.generate_response("gpt-3.5-turbo", messages)
     
     async def analyze_file(self, content, file_type):
