@@ -1,8 +1,8 @@
-from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from config import config
 from database.mongodb import db
 from datetime import datetime, timedelta
+import asyncio
 
 def owner_only(func):
     async def wrapper(client, message):
@@ -12,7 +12,6 @@ def owner_only(func):
         return await func(client, message)
     return wrapper
 
-@Client.on_message(filters.command("admin") & filters.private)
 @owner_only
 async def admin_panel(client, message):
     total_users = await db.users.count_documents({})
@@ -40,7 +39,6 @@ Banned Users: {banned_users}
     
     await message.reply(text, reply_markup=keyboard)
 
-@Client.on_message(filters.command("broadcast") & filters.private)
 @owner_only
 async def broadcast_command(client, message):
     # Simple implementation - in production, add confirmation and async sending
@@ -60,7 +58,6 @@ async def broadcast_command(client, message):
     
     await message.reply(f"✅ Broadcast sent to {count} users")
 
-@Client.on_message(filters.command("premium") & filters.private)
 @owner_only
 async def add_premium(client, message):
     parts = message.text.split()
