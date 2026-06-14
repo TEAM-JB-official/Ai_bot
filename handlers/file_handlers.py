@@ -2,13 +2,11 @@ import os
 import zipfile
 import tempfile
 import aiofiles
-from pyrogram import Client, filters
 from pyrogram.types import Message
 from ai_service.ai_provider import ai_provider
 
 SUPPORTED_EXTENSIONS = {'.py', '.js', '.html', '.css', '.json', '.txt'}
 
-@Client.on_message(filters.document)
 async def handle_file(client, message: Message):
     document = message.document
     file_name = document.file_name
