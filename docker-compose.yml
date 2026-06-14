@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+
+  bot:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://admin:password123@mongodb:27017
+      API_ID: ${API_ID}
+      API_HASH: ${API_HASH}
+      BOT_TOKEN: ${BOT_TOKEN}
+      AI_API_KEYS: ${AI_API_KEYS}
+      OWNER_ID: ${OWNER_ID}
+      LOG_CHANNEL_ID: ${LOG_CHANNEL_ID}
+      PORT: 8080
+    ports:
+      - "8080:8080"
+
+volumes:
+  mongodb_data:
