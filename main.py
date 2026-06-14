@@ -5,16 +5,14 @@ from config import config
 from database.mongodb import db
 from handlers import register_handlers
 from utils.logger import setup_logger
+from web_server import start_web_server
 
 async def main():
-    # Setup logger
     logger = setup_logger()
     
-    # Connect to MongoDB
     await db.connect()
     logger.info("Connected to MongoDB")
     
-    # Initialize bot
     app = Client(
         "ai_coding_bot",
         api_id=config.API_ID,
@@ -23,17 +21,16 @@ async def main():
         parse_mode=ParseMode.MARKDOWN
     )
     
-    # Register all handlers
     await register_handlers(app)
-    
-    # Start bot
     await app.start()
     logger.info(f"Bot started as @{(await app.get_me()).username}")
     
-    # Keep bot running
+    # Start web server for health checks (Koyeb requirement)
+    asyncio.create_task(start_web_server(config.PORT))
+    logger.info(f"Web server started on port {config.PORT}")
+    
     await idle()
     
-    # Cleanup
     await app.stop()
     logger.info("Bot stopped")
 
