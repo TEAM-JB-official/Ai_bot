@@ -1,7 +1,5 @@
-from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery
 
-@Client.on_callback_query()
 async def handle_callbacks(client, callback_query: CallbackQuery):
     data = callback_query.data
     
