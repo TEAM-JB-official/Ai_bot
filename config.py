@@ -20,7 +20,7 @@ class Config:
     # Admin
     OWNER_ID = int(os.getenv("OWNER_ID", "8043316865"))
     LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", "-1003909289740")) if os.getenv("LOG_CHANNEL_ID") else None
-    FORCE_SUBSCRIBE_CHANNEL = int(os.getenv("FORCE_SUBSCRIBE_CHANNEL", "-1002888391802")) if os.getenv("FORCE_SUBSCRIBE_CHANNEL") else None
+    FORCE_SUBSCRIBE_CHANNEL = int(os.getenv("FORCE_SUBSCRIBE_CHANNEL", "teamjb1")) if os.getenv("FORCE_SUBSCRIBE_CHANNEL") else None
     
     # Limits
     DAILY_FREE_LIMIT = int(os.getenv("DAILY_FREE_LIMIT", 100))
